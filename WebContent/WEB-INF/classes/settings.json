@@ -1,0 +1,14 @@
+{
+	"logger": {
+		"enabled": true
+	},
+	"modbus": {
+		"port": "dev/ttyusb0",
+		"bound": 19200,
+		"parity": "N",
+		"databit": 8,
+		"bitstop": 1
+	}
+}
+
+

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:web="http://xmlns.jcp.org/xml/ns/javaee">
+	<display-name>Bellantiglia</display-name>
+	<servlet>
+		<servlet-name>jersey-serlvet</servlet-name>
+		<servlet-class>org.glassfish.jersey.servlet.ServletContainer
+		</servlet-class>
+		<init-param>
+			<param-name>javax.ws.rs.Application</param-name>
+			<param-value>modbus.rest.service.Application</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jersey-serlvet</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+	<listener>
+		<listener-class>
+			modbus.rest.application.ApplicationListener
+		</listener-class>
+	</listener>
+
+<!-- 	<filter> -->
+<!-- 		<filter-name>Remote Address Filter</filter-name> -->
+<!-- 		<filter-class>org.apache.catalina.filters.RemoteAddrFilter</filter-class> -->
+<!-- 		<init-param> -->
+<!-- 			<param-name>allow</param-name> -->
+<!-- 			<param-value>127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1</param-value> -->
+<!-- 		</init-param> -->
+<!-- 	</filter> -->
+<!-- 	<filter-mapping> -->
+<!-- 		<filter-name>Remote Address Filter</filter-name> -->
+<!-- 		<url-pattern>/*</url-pattern> -->
+<!-- 	</filter-mapping> -->
+
+</web-app>

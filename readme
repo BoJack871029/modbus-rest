@@ -1,0 +1,7 @@
+#Inizializzare l'ambiente
+
+sudo mkdir /var/log/modbus_rest
+sudo chmod 777 /var/log/modbus_rest/
+
+sudo mkdir /opt/modbus_rest
+sudo chmod 777 /opt/modbus_rest/
