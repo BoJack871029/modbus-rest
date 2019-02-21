@@ -3,6 +3,15 @@ package modbus.rest.models;
 public class Configuration {
 	private Logger logger;
 	private ModbusSettings modbus;
+	private boolean debug;
+
+	public boolean isDebug() {
+		return debug;
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
 
 	public Logger getLogger() {
 		return logger;
@@ -21,4 +30,3 @@ public class Configuration {
 	}
 
 }
-

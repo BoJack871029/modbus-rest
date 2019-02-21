@@ -32,8 +32,7 @@ public class ModbusRs485 {
 	private static final ModbusRs485 instance = new ModbusRs485();
 
 	private static Semaphore semaphore = new Semaphore(1);
-
-	// private constructor to avoid client applications to use constructor
+ 
 	private ModbusRs485() {
 	}
 
@@ -44,16 +43,43 @@ public class ModbusRs485 {
 	private static SerialParameters getSpParameters(ModbusSettings mbSettings) {
 		SerialParameters sp = new SerialParameters();
 
+		StringBuilder serialSettings = new StringBuilder();
+
+		serialSettings.append("SerialPort Settings: ");
+		serialSettings.append("Bound: " + mbSettings.getBound() + ", ");
+		serialSettings.append("Port: " + mbSettings.getPort() + ", ");
+		serialSettings.append("Parity: " + mbSettings.getParity() + ", ");
+		serialSettings.append("BitStop: " + mbSettings.getBitstop() + ", ");
+		serialSettings.append("DataBit: " + mbSettings.getDatabit());
+
+		Logger.debug(serialSettings.toString());
+
 		// Porta seriale
 		sp.setDevice(mbSettings.getPort());
 
 		// Velocità
 		switch (mbSettings.getBound()) {
+		case "115200":
+			sp.setBaudRate(SerialPort.BaudRate.BAUD_RATE_115200);
+			break;
+		case "57600":
+			sp.setBaudRate(SerialPort.BaudRate.BAUD_RATE_57600);
+			break;
+		case "38400":
+			sp.setBaudRate(SerialPort.BaudRate.BAUD_RATE_38400);
+			break;
 		case "19200":
 			sp.setBaudRate(SerialPort.BaudRate.BAUD_RATE_19200);
 			break;
+		case "14400":
+			sp.setBaudRate(SerialPort.BaudRate.BAUD_RATE_14400);
+			break;
+
 		case "9600":
 			sp.setBaudRate(SerialPort.BaudRate.BAUD_RATE_9600);
+			break;
+		case "4800":
+			sp.setBaudRate(SerialPort.BaudRate.BAUD_RATE_4800);
 			break;
 		}
 
@@ -133,17 +159,19 @@ public class ModbusRs485 {
 		int startAddress = regs.get(0).getRegister();
 		int idSlave = regs.get(0).getSlave();
 		int values[];
-//		if (!AppListener.DEBUG) {
-		values = modbus.readHoldingRegisters(idSlave, startAddress, regsToReadCount);
-//		} else {
-//			values = new int[regsToReadCount];
-//
-//			for (int i = 0; i < values.length; i++) {
-//				values[i] = i + 1;
-//			}
-//		}
-		return values;
 
+		StringBuilder modbusRequestParameters = new StringBuilder();
+
+		modbusRequestParameters.append("Function Read Register: ");
+		modbusRequestParameters.append("ID Slave: " + idSlave + ", ");
+		modbusRequestParameters.append("StartAddress: " + startAddress + ", ");
+		modbusRequestParameters.append("RegCount: " + regsToReadCount);
+
+		Logger.debug(modbusRequestParameters.toString());
+
+		values = modbus.readHoldingRegisters(idSlave, startAddress, regsToReadCount);
+
+		return values;
 	}
 
 	public Map<Integer, ModbusRegister> readRegs(ModbusSettings mbSettings, List<ModbusRegister> regs)
@@ -153,11 +181,13 @@ public class ModbusRs485 {
 			Logger.debug("READ REGS");
 			semaphore.acquire();
 
-			Modbus.setLogLevel(Modbus.LogLevel.LEVEL_DEBUG);
+			Modbus.setLogLevel(Modbus.LogLevel.LEVEL_VERBOSE);
 
 			SerialUtils.setSerialPortFactory(new SerialPortFactoryJSSC());
 
 			modbusMaster = ModbusMasterFactory.createModbusMasterRTU(getSpParameters(mbSettings));
+
+			modbusMaster.setResponseTimeout(2000);
 
 			modbusMaster.connect();
 
@@ -176,7 +206,6 @@ public class ModbusRs485 {
 			List<ModbusRegister> regsSingleRead = get(queueRegs, offset);
 
 			while (!regsSingleRead.isEmpty()) {
-				Logger.debug("Read: " + regsSingleRead);
 
 				int startAddress = regsSingleRead.get(0).getRegister();
 
@@ -191,7 +220,8 @@ public class ModbusRs485 {
 
 			return regsToRead;
 		} catch (Exception e) {
-			throw new Exception("Errore readRegsV2: " + e.getMessage());
+			e.printStackTrace();
+			throw new Exception("Errore readRegs: " + e.getMessage());
 		} finally {
 
 			try {

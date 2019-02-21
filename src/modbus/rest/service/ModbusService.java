@@ -27,8 +27,8 @@ public class ModbusService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response readRegs(List<ModbusRegister> regs) {
-		try {
-			regs = ModbusHelper.readRegs(regs);
+		try {			
+			regs = ModbusHelper.readRegs(regs);			
 			return RestServiceUtils.buildSuccessResponse(regs);
 		} catch (Exception ex) {
 			Logger.error(ex.getMessage());

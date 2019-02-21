@@ -1,8 +1,7 @@
 package modbus.rest.helpers;
 
-import java.io.IOException;
 import java.util.ArrayList;
-
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import modbus.rest.com.ModbusRs485;
+import modbus.rest.models.Configuration;
 import modbus.rest.models.ModbusRegister;
 import modbus.rest.models.ModbusSettings;
 import modbus.rest.utils.Binary;
@@ -45,8 +45,15 @@ public class ModbusHelper {
 
 		ModbusSettings mbSettings = ConfigurationHelper.readModbusConfig(ModbusHelper.class);
 
-		Map<Integer, ModbusRegister> regsResult = ModbusRs485.getInstance().readRegs(mbSettings, regsToRead);
+		Configuration config = ConfigurationHelper.readConfig(ModbusHelper.class);
 
+		Map<Integer, ModbusRegister> regsResult = new HashMap<Integer, ModbusRegister>();
+
+		if (config.isDebug()) {
+			regsResult = fakeRead(regsToRead);
+		} else {
+			regsResult = ModbusRs485.getInstance().readRegs(mbSettings, regsToRead);
+		}
 		return regsToList(regsResult);
 	}
 
@@ -63,8 +70,13 @@ public class ModbusHelper {
 
 		ModbusSettings mbSettings = ConfigurationHelper.readModbusConfig(ModbusHelper.class);
 
-		ModbusRs485.getInstance().writeRegs(mbSettings, regs);
+		Configuration config = ConfigurationHelper.readConfig(ModbusHelper.class);
 
+		if (config.isDebug()) {
+			fakeWrite();
+		} else {
+			ModbusRs485.getInstance().writeRegs(mbSettings, regs);
+		}
 	}
 
 	public static int readBitValue(ModbusRegister reg) throws Exception {
@@ -86,6 +98,32 @@ public class ModbusHelper {
 
 		registerToWrite.setValue(Binary.binToInt(valueBin));
 
-		 writeReg(registerToWrite);
+		writeReg(registerToWrite);
+	}
+
+	public static Map<Integer, ModbusRegister> fakeRead(List<ModbusRegister> regs) {
+		Logger.debug("Fake read invoker!");
+		Map<Integer, ModbusRegister> regValues = new HashMap<Integer, ModbusRegister>();
+
+		for (ModbusRegister reg : regs) {
+			reg.setValue(getRandomInt());
+
+			if (!regValues.containsKey(reg.getRegister())) {
+				regValues.put(reg.getRegister(), reg);
+			}
+		}
+		return regValues;
+	}
+
+	public static void fakeWrite() {
+		Logger.debug("Fake write invoker!");
+	}
+
+	private static boolean getRandomBoolean() {
+		return Math.random() < 0.5;
+	}
+
+	private static int getRandomInt() {
+		return (int) (Math.random() * 26 + 14);
 	}
 }
