@@ -54,6 +54,10 @@ public class ModbusHelper {
 		} else {
 			regsResult = ModbusRs485.getInstance().readRegs(mbSettings, regsToRead);
 		}
+
+		for (ModbusRegister r : regsToList(regsResult)) {
+			Logger.debug("Reg [" + r.getRegister() + "],\tValue: [" + r.getValue()+"]");
+		}
 		return regsToList(regsResult);
 	}
 
