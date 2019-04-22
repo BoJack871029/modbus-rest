@@ -11,7 +11,6 @@ public class ApplicationListener implements ServletContextListener {
 
 	private static final Logger Logger = LogManager.getLogger(ApplicationListener.class);
 
-	public static boolean DEBUG = true;
 
 	@Override
 	public void contextDestroyed(ServletContextEvent arg0) {
@@ -26,7 +25,7 @@ public class ApplicationListener implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent arg0) {
-		System.setProperty("java.util.logging.manage", "org.apache.logging.log4j.jul.LogManager");
+//		System.setProperty("java.util.logging.manage", "org.apache.logging.log4j.jul.LogManager");
 
 		Logger.debug("**********************************************************************");
 		Logger.debug("*                       Starting Modbus Rest                         *");

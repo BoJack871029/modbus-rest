@@ -8,6 +8,8 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.gson.Gson;
+
 import modbus.rest.com.ModbusRs485;
 import modbus.rest.models.Configuration;
 import modbus.rest.models.ModbusRegister;
@@ -55,9 +57,6 @@ public class ModbusHelper {
 			regsResult = ModbusRs485.getInstance().readRegs(mbSettings, regsToRead);
 		}
 
-		for (ModbusRegister r : regsToList(regsResult)) {
-			Logger.debug("Reg [" + r.getRegister() + "],\tValue: [" + r.getValue()+"]");
-		}
 		return regsToList(regsResult);
 	}
 
@@ -75,6 +74,8 @@ public class ModbusHelper {
 		ModbusSettings mbSettings = ConfigurationHelper.readModbusConfig(ModbusHelper.class);
 
 		Configuration config = ConfigurationHelper.readConfig(ModbusHelper.class);
+
+		Logger.debug("Write regs: " + new Gson().toJson(regs));
 
 		if (config.isDebug()) {
 			fakeWrite();
@@ -106,7 +107,7 @@ public class ModbusHelper {
 	}
 
 	public static Map<Integer, ModbusRegister> fakeRead(List<ModbusRegister> regs) {
-		Logger.debug("Fake read invoker!");
+		Logger.debug("Fake read!");
 		Map<Integer, ModbusRegister> regValues = new HashMap<Integer, ModbusRegister>();
 
 		for (ModbusRegister reg : regs) {
@@ -120,7 +121,7 @@ public class ModbusHelper {
 	}
 
 	public static void fakeWrite() {
-		Logger.debug("Fake write invoker!");
+		Logger.debug("Fake write!");
 	}
 
 	private static boolean getRandomBoolean() {

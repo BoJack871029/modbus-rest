@@ -13,6 +13,8 @@ import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.gson.Gson;
+
 import modbus.rest.helpers.ModbusHelper;
 import modbus.rest.models.ModbusRegister;
 import modbus.rest.utils.RestServiceUtils;
@@ -27,8 +29,12 @@ public class ModbusService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response readRegs(List<ModbusRegister> regs) {
-		try {			
-			regs = ModbusHelper.readRegs(regs);			
+		try {
+			Logger.debug("*** READ REGS");
+			regs = ModbusHelper.readRegs(regs);
+
+			Logger.debug("Registri letti:" + new Gson().toJson(regs));
+
 			return RestServiceUtils.buildSuccessResponse(regs);
 		} catch (Exception ex) {
 			Logger.error(ex.getMessage());
@@ -43,6 +49,8 @@ public class ModbusService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response writeRegs(List<ModbusRegister> regs) {
 		try {
+			Logger.debug("*** WRITE REGS");
+			Logger.debug("Registri da scrivere:" + new Gson().toJson(regs));
 			ModbusHelper.writeRegs(regs);
 			return RestServiceUtils.buildSuccessResponse();
 		} catch (Exception e) {
